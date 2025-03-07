@@ -9,18 +9,35 @@ namespace Game.Audio
         private int currentTrackIndex = 0;
         private bool isPlaying = false;
 
-        public void Initialize(AudioClip[] tracks)
+        private void Awake()
         {
             audioSource = gameObject.AddComponent<AudioSource>();
-            playlist = tracks;
-            audioSource.clip = playlist[currentTrackIndex];
+            playlist = Resources.LoadAll<AudioClip>("Audio");
+            if (playlist.Length > 0)
+            {
+                audioSource.clip = playlist[currentTrackIndex];
+            }
             audioSource.loop = false;
+
+            PreloadAudioClips();
+        }
+
+        private void PreloadAudioClips()
+        {
+            foreach (AudioClip clip in playlist)
+            {
+                float[] samples = new float[clip.samples * clip.channels];
+                clip.GetData(samples, 0);
+            }
         }
 
         public void Play()
         {
-            audioSource.Play();
-            isPlaying = true;
+            if (playlist.Length > 0)
+            {
+                audioSource.Play();
+                isPlaying = true;
+            }
         }
 
         public void Pause()
@@ -37,30 +54,39 @@ namespace Game.Audio
 
         public void NextTrack()
         {
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.Length;
-            audioSource.clip = playlist[currentTrackIndex];
-            if (isPlaying)
+            if (playlist.Length > 0)
             {
-                audioSource.Play();
+                currentTrackIndex = (currentTrackIndex + 1) % playlist.Length;
+                audioSource.clip = playlist[currentTrackIndex];
+                if (isPlaying)
+                {
+                    audioSource.Play();
+                }
             }
         }
 
         public void PreviousTrack()
         {
-            currentTrackIndex = (currentTrackIndex - 1 + playlist.Length) % playlist.Length;
-            audioSource.clip = playlist[currentTrackIndex];
-            if (isPlaying)
+            if (playlist.Length > 0)
             {
-                audioSource.Play();
+                currentTrackIndex = (currentTrackIndex - 1 + playlist.Length) % playlist.Length;
+                audioSource.clip = playlist[currentTrackIndex];
+                if (isPlaying)
+                {
+                    audioSource.Play();
+                }
             }
         }
 
         public void PlayRandomTrack()
         {
-            currentTrackIndex = Random.Range(0, playlist.Length);
-            audioSource.clip = playlist[currentTrackIndex];
-            audioSource.Play();
-            isPlaying = true;
+            if (playlist.Length > 0)
+            {
+                currentTrackIndex = Random.Range(0, playlist.Length);
+                audioSource.clip = playlist[currentTrackIndex];
+                audioSource.Play();
+                isPlaying = true;
+            }
         }
 
         void Update()

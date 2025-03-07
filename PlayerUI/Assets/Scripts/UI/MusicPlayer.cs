@@ -19,9 +19,7 @@ namespace Game.UI
 
         void Start()
         {
-            AudioClip[] playlist = Resources.LoadAll<AudioClip>("Audio");
             audioSystem = gameObject.AddComponent<AudioSystem>();
-            audioSystem.Initialize(playlist);
 
             playButton.onClick.AddListener(OnPlayButtonClicked);
             pauseButton.onClick.AddListener(OnPauseButtonClicked);
@@ -61,7 +59,7 @@ namespace Game.UI
 
         private void OnRandomButtonClicked()
         {
-            audioSystem.PlayRandomTrack();        
+            audioSystem.PlayRandomTrack();
         }
     }
 }
