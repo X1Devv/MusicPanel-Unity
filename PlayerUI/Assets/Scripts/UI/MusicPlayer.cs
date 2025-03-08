@@ -14,12 +14,14 @@ namespace Game.UI
         [SerializeField] private Button randomButton;
         [SerializeField] private TextMeshProUGUI trackNameText;
         [SerializeField] private TextMeshProUGUI remainingTimeText;
+        [SerializeField] private TrackPopupController trackPopupController;
 
         private AudioSystem audioSystem;
 
         void Start()
         {
             audioSystem = gameObject.AddComponent<AudioSystem>();
+            trackPopupController.Initialize(audioSystem);
 
             playButton.onClick.AddListener(OnPlayButtonClicked);
             pauseButton.onClick.AddListener(OnPauseButtonClicked);
@@ -40,6 +42,7 @@ namespace Game.UI
         private void OnPlayButtonClicked()
         {
             audioSystem.Play();
+            trackPopupController.ShowTrackPopup();
         }
 
         private void OnPauseButtonClicked()
@@ -50,16 +53,19 @@ namespace Game.UI
         private void OnSkipButtonClicked()
         {
             audioSystem.NextTrack();
+            trackPopupController.ShowTrackPopup();
         }
 
         private void OnPrevButtonClicked()
         {
             audioSystem.PreviousTrack();
+            trackPopupController.ShowTrackPopup();
         }
 
         private void OnRandomButtonClicked()
         {
             audioSystem.PlayRandomTrack();
+            trackPopupController.ShowTrackPopup();
         }
     }
 }
