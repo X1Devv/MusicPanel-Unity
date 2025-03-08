@@ -23,11 +23,11 @@ namespace Game.UI
             audioSystem = gameObject.AddComponent<AudioSystem>();
             trackPopupController.Initialize(audioSystem);
 
-            playButton.onClick.AddListener(OnPlayButtonClicked);
-            pauseButton.onClick.AddListener(OnPauseButtonClicked);
-            skipButton.onClick.AddListener(OnSkipButtonClicked);
-            prevButton.onClick.AddListener(OnPrevButtonClicked);
-            randomButton.onClick.AddListener(OnRandomButtonClicked);
+            playButton.onClick.AddListener(() => HandleButtonAction(audioSystem.Play));
+            pauseButton.onClick.AddListener(() => HandleButtonAction(audioSystem.Pause, false));
+            skipButton.onClick.AddListener(() => HandleButtonAction(audioSystem.NextTrack));
+            prevButton.onClick.AddListener(() => HandleButtonAction(audioSystem.PreviousTrack));
+            randomButton.onClick.AddListener(() => HandleButtonAction(audioSystem.PlayRandomTrack));
         }
 
         void Update()
@@ -39,33 +39,10 @@ namespace Game.UI
             remainingTimeText.text = $"{minutes:00}:{seconds:00}";
         }
 
-        private void OnPlayButtonClicked()
+        private void HandleButtonAction(System.Action action, bool showPopup = true)
         {
-            audioSystem.Play();
-            trackPopupController.ShowTrackPopup();
-        }
-
-        private void OnPauseButtonClicked()
-        {
-            audioSystem.Pause();
-        }
-
-        private void OnSkipButtonClicked()
-        {
-            audioSystem.NextTrack();
-            trackPopupController.ShowTrackPopup();
-        }
-
-        private void OnPrevButtonClicked()
-        {
-            audioSystem.PreviousTrack();
-            trackPopupController.ShowTrackPopup();
-        }
-
-        private void OnRandomButtonClicked()
-        {
-            audioSystem.PlayRandomTrack();
-            trackPopupController.ShowTrackPopup();
+            action.Invoke();
+            if (showPopup) trackPopupController.ShowTrackPopup();
         }
     }
 }

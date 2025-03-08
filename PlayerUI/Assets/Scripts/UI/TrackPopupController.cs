@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using Game.Audio;
+using System.Collections;
 
 namespace Game.UI
 {
@@ -9,7 +10,9 @@ namespace Game.UI
         [SerializeField] private TextMeshProUGUI trackNameText;
         [SerializeField] private Animator popupAnimator;
         [SerializeField] private Animator diskAnimator;
+
         private AudioSystem audioSystem;
+        private bool isAnimating;
 
         private void Awake()
         {
@@ -24,26 +27,29 @@ namespace Game.UI
 
         public void ShowTrackPopup()
         {
-            diskAnimator.SetBool("Manifestations", true);
-
             trackNameText.text = audioSystem.GetCurrentTrackName();
+
+            if (isAnimating) return;
 
             StartCoroutine(ShowSequence());
         }
 
-        private System.Collections.IEnumerator ShowSequence()
+        private IEnumerator ShowSequence()
         {
-            yield return new WaitForSeconds(1f);
+            isAnimating = true;
 
-            popupAnimator.SetBool("Appearances", true);
+            yield return Animate(diskAnimator, "Manifestations", true, 1f);
+            yield return Animate(popupAnimator, "Appearances", true, 2f);
+            yield return Animate(popupAnimator, "Appearances", false, 0f);
+            yield return Animate(diskAnimator, "Manifestations", false, 1f);
 
-            yield return new WaitForSeconds(2f);
+            isAnimating = false;
+        }
 
-            popupAnimator.SetBool("Appearances", false);
-            
-            yield return new WaitForSeconds(1f);
-
-            diskAnimator.SetBool("Manifestations", false);
+        private IEnumerator Animate(Animator animator, string parameter, bool state, float delay)
+        {
+            animator.SetBool(parameter, state);
+            yield return new WaitForSeconds(delay);
         }
     }
 }
